@@ -1,0 +1,204 @@
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+
+
+
+model User {
+  id        Int       @id @default(autoincrement())
+  name      String
+  email     String    @unique
+  password  String
+  role      Role      @default(STUDENT)
+  events    Event[]   @relation("StudentEvents")
+  createdAt DateTime  @default(now())
+}
+
+model Event {
+  id          Int         @id @default(autoincrement())
+  title       String
+  description String?
+  date        DateTime
+  location    String
+  student     User        @relation("StudentEvents", fields: [studentId], references: [id])
+  studentId   Int
+  status      EventStatus @default(PENDING)
+  createdAt   DateTime    @default(now())
+}
+
+
+
+
+
+model Venue {
+  id          Int      @id @default(autoincrement())
+  name        String
+  capacity    Int
+  location    String
+  status      VenueStatus @default(ACTIVE)
+  bookings    Int      @default(0)
+  description String?
+  amenities   String?  // JSON string of amenities array
+  eventTypeId Int?
+  eventType   EventType? @relation(fields: [eventTypeId], references: [id])
+  createdAt   DateTime @default(now())
+}
+
+model LogisticsServiceProvider {
+  id        Int      @id @default(autoincrement())
+  name      String
+  contact   String?
+  location  String?
+  createdAt DateTime @default(now())
+}
+
+model CateringService {
+  id        Int      @id @default(autoincrement())
+  name      String
+  contact   String?
+  location  String?
+  createdAt DateTime @default(now())
+}
+
+model SecurityAgency {
+  id        Int      @id @default(autoincrement())
+  name      String
+  contact   String?
+  location  String?
+  createdAt DateTime @default(now())
+}
+
+model GiftShop {
+  id        Int      @id @default(autoincrement())
+  name      String
+  contact   String?
+  location  String?
+  createdAt DateTime @default(now())
+}
+
+model DJ {
+  id        Int      @id @default(autoincrement())
+  name      String
+  contact   String?
+  location  String?
+  createdAt DateTime @default(now())
+}
+
+model Photographer {
+  id        Int      @id @default(autoincrement())
+  name      String
+  contact   String?
+  location  String?
+  createdAt DateTime @default(now())
+}
+
+model EventType {
+  id          Int      @id @default(autoincrement())
+  name        String
+  color       String
+  events      Int      @default(0)
+  active      Boolean  @default(true)
+  description String?
+  category    String?
+  subEvents   String?  // JSON string of subEvents array
+  venues      Venue[]
+  createdAt   DateTime @default(now())
+}
+
+model Vendor {
+  id        Int      @id @default(autoincrement())
+  name      String
+  category  String
+  contact   String
+  email     String
+  address   String
+  website   String?
+  createdAt DateTime @default(now())
+}
+
+model ContentPage {
+  id           Int           @id @default(autoincrement())
+  title        String
+  content      String
+  status       ContentStatus @default(DRAFT)
+  lastModified String
+  slug         String        @unique
+  createdAt    DateTime      @default(now())
+}
+
+model MediaItem {
+  id        Int         @id @default(autoincrement())
+  name      String
+  type      MediaType
+  size      String
+  uploaded  String
+  url       String?
+  createdAt DateTime   @default(now())
+}
+
+model NewsItem {
+  id        Int          @id @default(autoincrement())
+  title     String
+  content   String
+  status    ContentStatus @default(DRAFT)
+  date      String
+  views     Int          @default(0)
+  author    String?
+  tags      String?      // JSON string of tags array
+  imageUrl  String?
+  createdAt DateTime     @default(now())
+}
+
+model Student {
+  id             Int      @id @default(autoincrement())
+  name           String
+  email          String   @unique
+  phone          String
+  status         StudentStatus @default(ACTIVE)
+  address        String?
+  organisation   String?
+  createdAt      DateTime @default(now())
+}
+
+enum Role {
+  ADMIN
+  STUDENT
+}
+
+enum EventStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+
+
+enum VenueStatus {
+  ACTIVE
+  MAINTENANCE
+  INACTIVE
+}
+
+enum ContentStatus {
+  PUBLISHED
+  DRAFT
+}
+
+enum MediaType {
+  IMAGE
+  DOCUMENT
+  VIDEO
+}
+
+enum StudentStatus {
+  ACTIVE
+  INACTIVE
+}
